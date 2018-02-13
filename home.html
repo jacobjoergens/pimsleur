@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"> 
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+		<!-- Amazon SDK -->
+		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
+		
+		<!-- Google JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		
+		<!-- Load Amazon Configuration -->
+		<script type="text/javascript">
+			AWS.config.update({
+				region: "eu-central-1",
+				accessKeyId: "AKIAIX7442UQWBHZQEFA",
+				secretAccessKey: "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"
+			});
+			var dynamodb = new AWS.DynamoDB();
+		</script>
+	    <title> Pimsleur: Learning by Waiting </title>
+	</head>
+	<body>
+		<style>
+			.box_rotate {
+			  -webkit-transform: rotate(-90deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+			      -ms-transform: rotate(-90deg);  /* IE 9 */
+			          transform: rotate(-90deg);  /* Firefox 16+, IE 10+, Opera */
+			}
+			#side{
+				width: 100px;
+				vertical-align: middle;
+				te
+			}
+			#main{
+				height: 100px;
+				vertical-align: middle;
+			}
+			#pageheader{
+				height: 150%;
+			}
+		</style>
+
+		<div id="pageheader" style="background-color: #4fa398">
+			<h1 style="margin-left: 2%; margin-bottom: 2%; margin-top: 0%; color: #ff0066;">Pimsleur</h1>
+			<h3 style="margin-left: 3%; margin-bottom: 3%; color: #ff99ab">Learning by Waiting</h3>
+		</div>
+		<div class="container-fluid" style="background-color: #992600;">
+			<a class="col-sm-2"; style="color: #ff99ab"; href="#"><h4>Home</h4></a>
+		</div>
+		<table class="table table-bordered">
+			<body>
+				<tr>
+					<td id="side" class="box_rotate">BEEF</td>
+					<td id="main">blahanlanlndfjnknl</td>
+				</tr>
+			</body>
+		</table>
+	</body>
+</html>

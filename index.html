@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,15 +12,233 @@
 
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-	<div class="container-fluid">
-    <title> A Simple Program </title>
-	<h1>Pimsleur</h1>
-	<p>French Vocab</p>
-	<applet code="pimsleur.class" width=150 height=25></applet>
-	</body>
- </head>
+
+	<!-- Amazon SDK -->
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
+	
+	<!-- Google JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!-- Load Amazon Configuration -->
+	<script type="text/javascript">
+		AWS.config.update({
+			region: "eu-central-1",
+			accessKeyId: "AKIAIX7442UQWBHZQEFA",
+			secretAccessKey: "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"
+		});
+		var dynamodb = new AWS.DynamoDB();
+		var d = new Date();
+	</script>
+    <title> Pimsleur: Learning by Waiting </title>
+    <script>
+		$(document).ready(function(){
+	    	$("#btn1").click(function(){
+					getTable();
+			});
+
+	    	function getTable(){
+				    alert(d.toDateString());
+					var params = {
+				      	TableName: "vocab",
+				        ProjectionExpression: "word, date",
+				        FilterExpression: "date = :dt",
+				        ExpressionAttributeValues: {
+				            ":dt": d.toDateString();
+				        }
+				    };
+					dynamodb.scan(params, function(err, data){
+						if(err) alert(JSON.stringify(err));
+						else alert(JSON.stringify(data));
+					});
+				}
+		});
+    </script>
+	<script>
+		$(document).ready(function(){
+			
+
+			$("#btn1").click(function(){
+				addVocab();
+			});
+
+			function addVocab(){ 
+				var newword = $("#newword").val();
+				var rownum = $("#todtab > tr").length;
+				var cellnum = $("#todtab").find("tr:last > td").length;
+				var row;
+				var cell;
+				var celltr;
+				var params = {
+					Item: {
+						"word": { S: newword }, 
+				   		"date": { S: d.toDateString() }
+				  	}, 
+				  	ReturnConsumedCapacity: "TOTAL", 
+				  	TableName: "vocab"
+				};
+				dynamodb.putItem(params, function(){});
+
+				if(cellnum%3==0) {
+				   	insertCell(true);
+				} else {
+					insertCell(false);
+				}	
+				$("#todtab").find("td:even").css("border-right", "hidden");
+				$("#todtab").find("td:odd").css("text-align", "right");
+				$("#todtab").find("td:odd").css("border-left", "hidden");
+				$("#newword").val(""); 
+			}
+
+			function insertCell(addrow){
+				var bool = addrow;
+				var vocab = ("<td>"+$("#newword").val()+"</td>");
+				var trans = ("<td>"+getTranslation($("#newword").val())+"</td>");
+				var row = ("<tr></tr>");
+				if(bool==true) $("#todtab").find("tbody").append(row);
+				$("#todtab").find("tr:last").append(vocab, trans);
+			}
+
+			function getTranslation(vocab){
+				var result = null;
+		        var scriptUrl = "http://www.wordreference.com/enfr/"+vocab;
+		        $.ajax({
+		        	url: scriptUrl,
+		        	type: 'get',
+		       		dataType: 'html',
+		        	async: false,
+		        	success: function(data) {
+		        		var f = $(data).find("[id^='enfr:']:first");
+		        		var c = $(f).find(".ToWrd").clone();
+		        		$(c).find(":first-child").remove();
+		            	result = $(c).text();
+		          	} 
+		       	});
+		     	return result;
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<style type="text/css">
+		.row .col-sm-6{
+			height: 100%;
+			width: 50%;
+			padding: 0px;
+		}
+		.row{
+			height: 200px;
+		}
+		.col-sm-6 #inputSuccess.form-control{
+			padding: 0;
+			height: 100%;
+		}
+		.col-sm-6 .table{
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			font-size: 4em;
+			text-align: center;
+		}
+		#head{
+			border: hidden;
+			text-align: left;
+		}
+		#pageheader{
+			height: 150%;
+		}
+	</style>
+
+	<div id="pageheader" style="background-color: #4fa398">
+		<h1 style="margin-left: 2%; margin-bottom: 2%; margin-top: 0%; color: #ff0066;">Rember</h1>
+		<h3 style="margin-left: 3%; margin-bottom: 3%; color: #ff99ab">Learning by Waiting</h3>
+	</div>
+	<div class="container-fluid" style="background-color: #992600;">
+		<h4 class="col-sm-2" style="color: #ff99ab">Home</h4>
+		<h4 class="col-sm-2" style="color: #ff99ab">French Vocab</h4>
+	</div>
+	<div class="container" style="border-left-width: 1em; border-left-color:#992600;  padding-top: 2%; color: #ff99ab">
+		<div class="row">
+			<div class="col-sm-6">
+				<table class="table table-bordered"> 
+					<tbody>
+						<tr>
+							<td style="vertical-align: middle">vocab</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+    		<div class="col-sm-6">
+     			<input type="text" class="form-control" id="inputSuccess">
+      			<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+   			</div>
+  		</div>
+
+
+		<div class="progress" style="margin-top: 2%">
+    		<div class="progress-bar progress-bar-success" role="progressbar" style="width:50%">Correct answers</div>
+    		<div class="progress-bar progress-bar-danger" role="progressbar" style="width:50%">Wrong Answers</div>
+  		</div>
+
+
+		<div class = "categories">
+			<table class="table">
+				<tbody>
+					<tr class="col-sm-3">
+						<td class="col-sm-2" id="head" style="vertical-align: middle"><strong>Today's List</strong></td>
+						<td class="col-sm-2" id="head" style="vertical-align: middle">
+		  					<div class="input-group">
+		   		 				<input type="text" class="form-control" placeholder="Add" id="newword">
+		   		 				<div class="input-group-btn">
+		      						<button id="btn1" class="btn btn-default" type="submit">
+		       							<i class="glyphicon glyphicon-plus-sign"></i>
+		      						</button>
+		    					</div>
+		  					</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table class="table table-bordered" id="todtab">
+				<tbody></tbody>
+			</table>
+
+			<div class="col-sm-12">
+				<strong>Yesterday's List</strong>
+			</div>
+			<table class="table table-bordered">
+				<tbody> 
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+				</tbody>
+			</table>
+				<div class="col-sm-12">
+				<strong>List from Four Days Ago</strong>
+			</div>
+			<table class="table table-bordered">
+				<tbody> 
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	</div>
+</body>
 </html>
-
-
-
